@@ -81,8 +81,13 @@ function setState(updates) {
 
 function setField(k, v) {
   state.form[k] = v;
-  if (state.errors[k]) delete state.errors[k];
-  render();
+  if (state.errors[k]) {
+    delete state.errors[k];
+    const errEl = document.getElementById('err-' + k);
+    if (errEl) errEl.style.display = 'none';
+    const inputEl = document.getElementById('field-' + k);
+    if (inputEl) inputEl.style.border = '1.5px solid #D1D5DB';
+  }
 }
 
 function toggleInterest(i) {
@@ -235,19 +240,19 @@ function renderForm() {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
             <div>
               <label style="${lbl}">First Name *</label>
-              <input style="${inp(e.firstName)}" value="${f.firstName}" oninput="setField('firstName',this.value)" placeholder="Jane">
-              ${e.firstName ? '<div style="color:#EF4444;font-size:12px;margin-top:4px;">Required</div>' : ""}
+              <input id="field-firstName" style="${inp(e.firstName)}" value="${f.firstName}" oninput="setField('firstName',this.value)" placeholder="Jane">
+              <div id="err-firstName" style="color:#EF4444;font-size:12px;margin-top:4px;display:${e.firstName?'block':'none'};">Required</div>
             </div>
             <div>
               <label style="${lbl}">Last Name *</label>
-              <input style="${inp(e.lastName)}" value="${f.lastName}" oninput="setField('lastName',this.value)" placeholder="Smith">
-              ${e.lastName ? '<div style="color:#EF4444;font-size:12px;margin-top:4px;">Required</div>' : ""}
+              <input id="field-lastName" style="${inp(e.lastName)}" value="${f.lastName}" oninput="setField('lastName',this.value)" placeholder="Smith">
+              <div id="err-lastName" style="color:#EF4444;font-size:12px;margin-top:4px;display:${e.lastName?'block':'none'};">Required</div>
             </div>
           </div>
           <div style="margin-bottom:14px;">
             <label style="${lbl}">Email Address *</label>
-            <input type="email" style="${inp(e.email)}" value="${f.email}" oninput="setField('email',this.value)" placeholder="jane@lab.com">
-            ${e.email ? '<div style="color:#EF4444;font-size:12px;margin-top:4px;">Please enter a valid email</div>' : ""}
+            <input id="field-email" type="email" style="${inp(e.email)}" value="${f.email}" oninput="setField('email',this.value)" placeholder="jane@lab.com">
+            <div id="err-email" style="color:#EF4444;font-size:12px;margin-top:4px;display:${e.email?'block':'none'};">Please enter a valid email</div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
             <div>

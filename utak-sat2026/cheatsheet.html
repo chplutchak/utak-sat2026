@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>UTAK Cheat Sheet — SAT 2026</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; background: #F7F8FC; color: #1A1A2E; -webkit-text-size-adjust: 100%; }
+.header { background: #0D1B3E; padding: 16px 20px; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; }
+.header-title { color: #fff; font-size: 18px; font-weight: 800; }
+.header-sub { color: #00A99D; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; margin-top: 2px; }
+.search-bar { padding: 10px 16px; border-radius: 10px; border: none; font-size: 15px; width: 220px; outline: none; }
+.tabs { display: flex; gap: 0; background: #fff; border-bottom: 2px solid #E2E8F0; padding: 0 20px; overflow-x: auto; position: sticky; top: 57px; z-index: 9; }
+.tab { padding: 12px 18px; font-size: 13px; font-weight: 600; color: #9CA3AF; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
+.tab.active { color: #0D1B3E; border-bottom-color: #00A99D; }
+.content { max-width: 900px; margin: 0 auto; padding: 20px; }
+.section { display: none; }
+.section.active { display: block; }
+.card { background: #fff; border-radius: 14px; border: 1px solid #E2E8F0; margin-bottom: 16px; overflow: hidden; }
+.card-header { padding: 16px 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid #00A99D; }
+.card-header.red { border-left-color: #EF4444; }
+.card-header.amber { border-left-color: #F59E0B; }
+.card-header.blue { border-left-color: #3B82F6; }
+.card-header.purple { border-left-color: #8B5CF6; }
+.card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.card-title { font-size: 16px; font-weight: 700; color: #0D1B3E; }
+.card-body { display: none; padding: 0 20px 20px; border-top: 1px solid #F3F4F6; }
+.card-body.open { display: block; }
+.qa { margin-top: 16px; }
+.q { font-size: 14px; font-weight: 700; color: #0D1B3E; margin-bottom: 6px; padding-left: 12px; border-left: 3px solid #00A99D; }
+.a { font-size: 14px; color: #374151; line-height: 1.7; margin-bottom: 18px; padding-left: 12px; }
+.skus { margin-top: 12px; padding: 12px 14px; background: #F8FAFC; border-radius: 8px; font-size: 13px; color: #6B7280; }
+.sku-label { font-weight: 700; color: #0D1B3E; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+.sku-item { margin-bottom: 3px; }
+.sku-item span { font-family: monospace; background: #E2E8F0; padding: 1px 6px; border-radius: 4px; font-size: 12px; margin-right: 6px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-bottom: 12px; margin-top: 14px; }
+.badge-hot { background: #FEE2E2; color: #991B1B; }
+.badge-strong { background: #FEF3C7; color: #92400E; }
+.badge-good { background: #D1FAE5; color: #065F46; }
+.tip { background: #EFF6FF; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #1E40AF; margin-top: 12px; line-height: 1.7; border-left: 3px solid #3B82F6; }
+.tip strong { font-weight: 700; }
+.chevron { font-size: 12px; color: #9CA3AF; transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
+.quick-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+.fact { background: #F8FAFC; border-radius: 8px; padding: 12px 14px; }
+.fact-label { font-size: 11px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+.fact-val { font-size: 14px; font-weight: 700; color: #0D1B3E; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">UTAK Cheat Sheet</div>
+    <div class="header-sub">SAT 2026 — FIELD REFERENCE</div>
+  </div>
+  <input class="search-bar" type="search" placeholder="Search..." id="searchInput" oninput="doSearch(this.value)">
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview',event)">Overview</button>
+  <button class="tab" onclick="showTab('volatiles',event)">Volatiles / EtOH</button>
+  <button class="tab" onclick="showTab('doa',event)">Drugs of Abuse</button>
+  <button class="tab" onclick="showTab('fentanyl',event)">Fentanyl / Opioids</button>
+  <button class="tab" onclick="showTab('benzo',event)">Benzos</button>
+  <button class="tab" onclick="showTab('metals',event)">Metals</button>
+  <button class="tab" onclick="showTab('antidep',event)">Antidepressants</button>
+  <button class="tab" onclick="showTab('blanks',event)">Blank Matrices</button>
+  <button class="tab" onclick="showTab('custom',event)">Custom QC</button>
+  <button class="tab" onclick="showTab('objections',event)">Objections</button>
+</div>
+
+<div class="content">
+
+  <div class="section active" id="sec-overview">
+    <div class="quick-facts">
+      <div class="fact"><div class="fact-label">Who we are</div><div class="fact-val">UTAK Laboratories — Valencia, CA. 50+ years making QC materials for labs that can't afford to guess.</div></div>
+      <div class="fact"><div class="fact-label">The real difference</div><div class="fact-val">100% real human matrices. Not synthetic buffers. Not stripped serum. The actual thing.</div></div>
+      <div class="fact"><div class="fact-label">What we make</div><div class="fact-val">Stock controls, custom QC, and blank matrices in whole blood, serum, plasma, urine, and oral fluid.</div></div>
+      <div class="fact"><div class="fact-label">Custom turnaround</div><div class="fact-val">15 business days for frozen. 20 for lyophilized. From analyte confirmation to your door.</div></div>
+      <div class="fact"><div class="fact-label">Platforms supported</div><div class="fact-val">LC-MS/MS, GC-MS, QTOF, ELISA, EMIT, immunoassay — all of them.</div></div>
+      <div class="fact"><div class="fact-label">Book a meeting</div><div class="fact-val">Andrew Hartmann — calendly.com/ahartmann-utak/30min</div></div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#00A99D;">Start here</div><div class="card-title">What to say in the first 30 seconds</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="a" style="margin-top:16px;">"We make QC materials for toxicology labs — whole blood, serum, urine — and it's all real human matrix. Not synthetic. Not buffer solutions dressed up to look like the real thing. We have stock products for common analytes, and if you need something specific, we build it custom. Frozen ships in 15 days. What are you running right now?"</div>
+        <div class="tip"><strong>Then listen.</strong> What matrix are they using? What instrument? Method development or routine QC? The best conversations start with their problem, not our catalog.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#F59E0B;">Know the room</div><div class="card-title">Who's walking up to this booth</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body">
+        <div class="qa">
+          <div class="q">What kind of labs does this crowd come from?</div>
+          <div class="a">Medical examiner offices, crime labs, reference labs doing forensic tox. These aren't clinical labs running urine cups. They're doing cause-of-death determinations, DUI casework, drug-facilitated crime analysis. Whole blood is their primary matrix. Lead with urine-based products and you've already lost them.</div>
+          <div class="q">What's on their minds this week?</div>
+          <div class="a">Volatiles and ethanol — two sessions on it, so that conversation is live right now. Opioid and fentanyl death trends. Multi-drug cases where the polypharmacy makes interpretation complicated. There's also an AI in forensic tox session on the last day that'll get people talking. Worth knowing about if it comes up.</div>
+          <div class="q">What do they actually care about in a QC vendor?</div>
+          <div class="a">Reliability. Matrix authenticity. Not having to explain to their director why their QC behaved differently than their cases. The worst thing that can happen in a forensic lab is a control that doesn't reflect real human matrix — it introduces doubt into casework. That's what we solve.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-volatiles">
+    <span class="badge badge-hot">Two conference sessions on this — it will come up</span>
+    <div class="card">
+      <div class="card-header amber" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#D97706;">Volatiles / Ethanol Controls</div><div class="card-title">Whole Blood Volatiles, Ethanol, EtG</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"What do you have for volatiles?"</div>
+          <div class="a">Two whole blood volatiles controls — SKUs 99119 and 88119. Acetone, ethanol, ethylene glycol, isopropanol, methanol. The full set you'd expect in a forensic volatiles panel. And it's real whole blood, which matters here — a synthetic substitute isn't going to give you the same confidence in your results because the matrix genuinely affects how these analytes behave.</div>
+          <div class="q">"We need ethanol-only — just for DUI work."</div>
+          <div class="a">Ethanol whole blood control at 80 mg/dL (SKU 31080). Simple, clean, exactly what most DUI casework labs need.</div>
+          <div class="q">"What about EtG?"</div>
+          <div class="a">EtG Plus in two levels (SKUs 13020 and 13021), both urine-based. EtG is the metabolite labs use to catch alcohol use after ethanol has already cleared. Two levels so you can bracket your cutoff on both sides.</div>
+          <div class="q">"Our concentrations are different from what you stock."</div>
+          <div class="a">That's a custom build. Tell us your targets and we'll put it together — 15 days for frozen, in real whole blood, at whatever levels your method needs.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>99119</span> Volatiles — Whole Blood</div>
+          <div class="sku-item"><span>88119</span> Volatiles — Whole Blood (alt)</div>
+          <div class="sku-item"><span>31080</span> Ethanol 80 mg/dL — Whole Blood</div>
+          <div class="sku-item"><span>13020</span> EtG Plus Level 1 — Urine</div>
+          <div class="sku-item"><span>13021</span> EtG Plus Level 2 — Urine</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-doa">
+    <span class="badge badge-hot">Core forensic product — lead with whole blood</span>
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#00A99D;">Drugs of Abuse</div><div class="card-title">Whole Blood DOA Controls</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"What drugs of abuse controls do you have in whole blood?"</div>
+          <div class="a">Drugs of Abuse Level 1 and Level 2 — SKUs 98818 and 98819. Designed for forensic tox workflows. Real whole blood, multi-analyte, built for the cases these labs are actually running. That's usually the right starting point for this crowd.</div>
+          <div class="q">"We need something for our immunoassay screening step."</div>
+          <div class="a">The DAU IA series is built for that — five levels across a range of concentrations (SKUs 50600–50604). And if you need cutoff-specific bracketing, the DAU High and Low Cutoff controls (50700–50703) handle that.</div>
+          <div class="q">"We're specifically running amphetamines — a lot of meth cases."</div>
+          <div class="a">Amphetamines Panel in two levels (SKUs 41400 and 41401). Amphetamine and methamphetamine. Straightforward.</div>
+          <div class="q">"We need to verify we can catch adulterated specimens."</div>
+          <div class="a">Validity Controls in five levels (SKUs 17010–17014). Common adulterants, designed to confirm your system can identify tampered specimens. Important for any lab doing compliance or workplace testing alongside forensic work.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>98818</span> Drugs of Abuse Level 1 — Whole Blood</div>
+          <div class="sku-item"><span>98819</span> Drugs of Abuse Level 2 — Whole Blood</div>
+          <div class="sku-item"><span>50600–50604</span> DAU IA Series — 5 levels</div>
+          <div class="sku-item"><span>50700–50703</span> DAU High/Low Cutoff</div>
+          <div class="sku-item"><span>41400–41401</span> Amphetamines Panel — 2 levels</div>
+          <div class="sku-item"><span>17010–17014</span> Validity Controls — 5 levels</div>
+        </div>
+        <div class="tip"><strong>Heads up:</strong> This crowd works in whole blood almost exclusively. If someone mentions urine DOA, they likely have a clinical or reference lab arm too — still worth the conversation, but start with 98818/98819.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-fentanyl">
+    <span class="badge badge-hot">Opioid trend talks will send people to this booth</span>
+    <div class="card">
+      <div class="card-header red" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#DC2626;">Fentanyl / Opioid Controls</div><div class="card-title">Fentanyl Analogues — Whole Blood</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"Do you have fentanyl controls?"</div>
+          <div class="a">Yes — Fentanyl Analogues at two concentrations: 2 ng/mL (SKU 10189) and 5 ng/mL (SKU 10186). Both in real whole blood. These aren't just parent fentanyl — they're built for the analogue landscape that forensic labs are actually dealing with in casework right now.</div>
+          <div class="q">"We're seeing carfentanil, acetylfentanyl, newer analogues showing up in cases."</div>
+          <div class="a">If your analyte list has grown beyond what the stock covers — and a lot of forensic labs are expanding their panels as new analogues hit — that's a custom build conversation. We build to your exact list. Frozen ships in 15 days.</div>
+          <div class="q">"We need more than two concentration levels for our method."</div>
+          <div class="a">Custom. Tell us your method's range, we'll build the levels you need. That's exactly what the custom process is for — your concentrations, not whatever was convenient to stock.</div>
+          <div class="q">"We're running vitreous humor for fentanyl."</div>
+          <div class="a">Specialty matrix custom build. Most vendors won't touch vitreous. We will. Same 15-day frozen turnaround.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>10189</span> Fentanyl Analogues 2 ng/mL — Whole Blood</div>
+          <div class="sku-item"><span>10186</span> Fentanyl Analogues 5 ng/mL — Whole Blood</div>
+        </div>
+        <div class="tip"><strong>After the opioid trends session:</strong> People will be thinking about gaps in their QC coverage. "We have two levels in whole blood, and if your panel has gone further than that, we can build it" is the right thing to say.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-benzo">
+    <span class="badge badge-strong">Comes up constantly in multi-drug forensic cases</span>
+    <div class="card">
+      <div class="card-header blue" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#1D4ED8;">Benzodiazepine Controls</div><div class="card-title">Benzo QC — Urine & Serum</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"What benzo controls do you carry?"</div>
+          <div class="a">Benzodiazepines Plus at 100 ng/mL (SKUs 12090 and 12100) and 400 ng/mL (SKU 12091) — brackets the cutoffs for most common benzo screening methods. We also have STABBS, which is a serum tox control that covers tricyclic antidepressants, barbiturates, and benzos together, positive and negative (SKUs 44510 and 44511). Useful if you're running a comprehensive serum tox screen on postmortem cases.</div>
+          <div class="q">"We screen whole blood on postmortem cases, not urine."</div>
+          <div class="a">The stock benzo controls are urine-based. For whole blood at the concentrations you're actually seeing in postmortem casework, a custom build is usually the right call — forensic concentrations are very different from clinical cutoffs. We can match your method.</div>
+          <div class="q">"We need coverage for both screening and LC-MS/MS confirmation."</div>
+          <div class="a">Two different tools for two different purposes. Stock controls for cutoff verification on your screener. Custom control in your exact matrix and concentrations for confirmation. We can do both.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>12090 / 12100</span> Benzodiazepines Plus 100 ng/mL</div>
+          <div class="sku-item"><span>12091</span> Benzodiazepines Plus 400 ng/mL</div>
+          <div class="sku-item"><span>44510</span> STABBS Positive — TCA, Barb, Benzo in Serum</div>
+          <div class="sku-item"><span>44511</span> STABBS Negative</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-metals">
+    <span class="badge badge-strong">Poisoning casework — steady interest</span>
+    <div class="card">
+      <div class="card-header purple" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#7C3AED;">Metals & Trace Elements</div><div class="card-title">Whole Blood Metals, Lead, Trace Elements, Urine Metals</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"Do you have whole blood metals controls?"</div>
+          <div class="a">Three levels — SKUs 44521, 44522, 44523. Real whole blood. Lead-specific controls also in three levels (SKUs 93311–93313) if you're running dedicated lead programs. Both are built for poisoning casework.</div>
+          <div class="q">"What about urine metals?"</div>
+          <div class="a">High and normal range — SKUs 12110 and 12111. Heavy metals clear through urine as the body responds to toxicity, so urine testing shows up in both forensic and clinical metals work.</div>
+          <div class="q">"We need trace elements — selenium, zinc, copper."</div>
+          <div class="a">Trace Elements in high and normal range (SKUs 66815 and 66816). The essential elements that function as enzyme cofactors — both deficiency and toxicity cases covered.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>44521–44523</span> Metals Levels 1–3 — Whole Blood</div>
+          <div class="sku-item"><span>93311–93313</span> Lead Levels 1–3 — Whole Blood</div>
+          <div class="sku-item"><span>12110–12111</span> Urine Metals — High & Normal Range</div>
+          <div class="sku-item"><span>66815–66816</span> Trace Elements — High & Normal Range</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-antidep">
+    <span class="badge badge-good">LC-MS/MS antidepressant session will open these conversations</span>
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#00A99D;">Antidepressants / SSRI Controls</div><div class="card-title">SSRI, Tricyclics, Antipsychotics</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"Do you have SSRI controls?"</div>
+          <div class="a">SSRI 7 Plus in high and mid range — SKUs 57040 and 57041. Seven SSRIs, serum-based. Designed for therapeutic monitoring and compliance testing where narrow windows mean you need QC you can actually trust.</div>
+          <div class="q">"We need tricyclic antidepressant controls."</div>
+          <div class="a">Tricyclic Antidepressants VI in high and mid range (SKUs 66316 and 66317). TCAs still show up in forensic casework regularly — especially in combination with other drugs. STABBS (44510/44511) is worth mentioning here too if they need combined serum coverage for TCAs, benzos, and barbs together in one control.</div>
+          <div class="q">"The session this morning was about 25 antidepressants in blood — we're building out that method."</div>
+          <div class="a">That's a custom conversation. If their analyte list goes beyond what our stock covers, we build it. Tell us the analytes and concentrations — frozen control ready in 15 days. A lot of labs doing new method development come to us specifically because they need QC that matches their panel exactly, not whatever was convenient to put on a shelf.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>57040–57041</span> SSRI 7 Plus — High & Mid Range</div>
+          <div class="sku-item"><span>66316–66317</span> Tricyclic Antidepressants VI — High & Mid</div>
+          <div class="sku-item"><span>57044–57045</span> Antipsychotics I — High & Mid Range</div>
+          <div class="sku-item"><span>44510–44511</span> STABBS +/- — TCA, Barb, Benzo in Serum</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-blanks">
+    <span class="badge badge-strong">Method development staple — especially for new assays</span>
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#00A99D;">Blank Matrices</div><div class="card-title">Blank Whole Blood, Serum, Plasma, Urine — Real & Synthetic</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"We're validating a new method and need blank matrix to spike."</div>
+          <div class="a">That's exactly what these are for. Blank Whole Blood (44600-WB), Blank Human Serum (44600), Normal Human Serum (44600-S(500)), Defibrinated Human Plasma (44600-D) — all from FDA-licensed US facilities, screened for common drugs of abuse and alcohol. You're starting from a verified clean baseline, not hoping your pooled source is what it says it is.</div>
+          <div class="q">"What anticoagulant is in the whole blood?"</div>
+          <div class="a">Potassium oxalate with sodium fluoride for preservation. The standard for forensic whole blood work — especially important for volatiles, where your anticoagulant and preservative choices actually affect analyte stability.</div>
+          <div class="q">"We need blank urine."</div>
+          <div class="a">Certified Drug Free Urine in frozen (88121-CDF(F)) or liquid (88121-CDF(L)). Screened for the major DOA analytes. Frozen has no preservatives. Liquid uses sodium azide. Depends on your storage setup and how you're using it.</div>
+          <div class="q">"We're running analytes that are really sensitive to matrix interference — endogenous compounds keep causing problems."</div>
+          <div class="a">That's actually where our SMx line comes in. SMx Oral Fluid, SMx Serum, SMx Urine — synthetic matrices designed to mimic real human matrix while eliminating the unwanted endogenous analytes that cause those interference headaches. When you need consistency and reliability across lots for difficult analytes, SMx gives you that clean, controlled baseline that real human matrix sometimes can't. Works on LC-MS/MS, GC-MS, QTOF, immunoassay, all of it. It's not a substitute for real matrix — it's the right tool for a specific problem.</div>
+        </div>
+        <div class="skus">
+          <div class="sku-label">Relevant SKUs</div>
+          <div class="sku-item"><span>44600-WB</span> Blank Whole Blood</div>
+          <div class="sku-item"><span>44600</span> Blank Human Serum</div>
+          <div class="sku-item"><span>44600-S(500)</span> Normal Human Serum — 500mL</div>
+          <div class="sku-item"><span>44600-D(500)</span> Defibrinated Human Plasma — 500mL</div>
+          <div class="sku-item"><span>88121-CDF(F)</span> Certified Drug Free Urine — Frozen</div>
+          <div class="sku-item"><span>88121-CDF(L)</span> Certified Drug Free Urine — Liquid</div>
+          <div class="sku-item"><span>35400-SMX-OF</span> SMx Oral Fluid</div>
+          <div class="sku-item"><span>35700-SMX-S</span> SMx Serum</div>
+          <div class="sku-item"><span>36000-SMX-U</span> SMx Urine</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-custom">
+    <span class="badge badge-hot">Our biggest differentiator — don't undersell it</span>
+    <div class="card">
+      <div class="card-header" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#00A99D;">Custom QC</div><div class="card-title">Built to your specs. Not ours.</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"I don't see what I need in your catalog."</div>
+          <div class="a">Good — that's where we do our best work. You give us your analytes, your target concentrations, your matrix, and your volume. We build it. Frozen ships in 15 days. Lyophilized in 20. Real human matrix all the way through.</div>
+          <div class="q">"How does the custom process actually work?"</div>
+          <div class="a">It starts with your analyte list. We confirm what you need, send a quote, you approve it, we get to work. No months of back-and-forth. No "we'll see if we can accommodate that." Fifteen days from confirmation to a frozen control on your bench.</div>
+          <div class="q">"What's the minimum order?"</div>
+          <div class="a">Best to have Andrew follow up since it varies by product type. What I can say is we work with labs of all sizes — this isn't a program just for high-volume accounts.</div>
+          <div class="q">"Can you do specialty matrices — vitreous humor, meconium, CSF?"</div>
+          <div class="a">Yes. And most vendors won't. Vitreous especially is something labs ask for and get turned down on. We do it. Same turnaround.</div>
+          <div class="q">"We need lyophilized — we don't have the freezer space."</div>
+          <div class="a">Available. Twenty days instead of fifteen. Longer shelf life, room temp storage, ships without a cold chain. Worth the extra five days for labs with storage constraints.</div>
+        </div>
+        <div class="tip"><strong>When to pivot here:</strong> "We need a different concentration." "We have analytes you probably don't stock." "We're validating something new." "We run a matrix you likely don't carry." All custom conversations — and custom is where we genuinely stand apart.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-objections">
+    <div class="card">
+      <div class="card-header red" onclick="toggleCard(this)">
+        <div><div class="card-label" style="color:#DC2626;">Common Objections</div><div class="card-title">How to handle pushback without getting salesy</div></div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="card-body open">
+        <div class="qa">
+          <div class="q">"We already have a vendor we're happy with."</div>
+          <div class="a">"Totally get it — most labs do. We hear that and then end up being the call they make when their current vendor can't build something custom, or when they need a specialty matrix nobody else will touch. Do you ever run into situations where you need something they can't do for you?"</div>
+          <div class="q">"Your catalog doesn't have what we need."</div>
+          <div class="a">"Good — then let's talk custom. That's actually where we do our best work. What are you looking for?"</div>
+          <div class="q">"We make our own QC in-house."</div>
+          <div class="a">"That's common at larger labs. A lot of those same labs still use us as backup, or for analytes that are hard to source — fentanyl analogues especially, where procurement gets complicated. Anything on your list been a headache to get your hands on?"</div>
+          <div class="q">"We've had quality issues with vendors before."</div>
+          <div class="a">"That's exactly why the matrix matters. Ours is 100% real human, collected in FDA-licensed US facilities, screened and verified before it ships. We've been doing this for 50 years — quality isn't a talking point for us, it's the whole reason we exist."</div>
+          <div class="q">"I'm not the purchasing decision maker."</div>
+          <div class="a">"No worries — can I give you something to take back? And would it help to have our sales rep reach out directly to whoever handles it?" Then hand them the QR code for Andrew's Calendly.</div>
+          <div class="q">"15 days feels long. Our current vendor is faster."</div>
+          <div class="a">"What are they shipping in that timeframe — is it real human matrix, or a synthetic formulation? The 15 days is because we're sourcing, screening, and building a control that actually behaves like your cases. Speed and authenticity are usually a tradeoff. We picked authenticity."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id, e) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  if (e && e.target) e.target.classList.add('active');
+}
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.chevron');
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+function doSearch(val) {
+  if (!val.trim()) return;
+  const lower = val.toLowerCase();
+  let firstMatch = null;
+  document.querySelectorAll('.card').forEach(card => {
+    if (card.textContent.toLowerCase().includes(lower) && !firstMatch) firstMatch = card;
+  });
+  if (firstMatch) {
+    const section = firstMatch.closest('.section');
+    if (section) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      section.classList.add('active');
+      const sectionId = section.id.replace('sec-', '');
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.remove('active');
+        if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'" + sectionId + "'")) t.classList.add('active');
+      });
+      firstMatch.querySelector('.card-body').classList.add('open');
+      setTimeout(() => firstMatch.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+}
+</script>
+</body>
+</html>

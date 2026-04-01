@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: utak-sat2026
+    runtime: static
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false

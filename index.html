@@ -92,9 +92,34 @@ function setField(k, v) {
 
 function toggleInterest(i) {
   const idx = state.form.interests.indexOf(i);
+  const checked = idx < 0;
   if (idx >= 0) state.form.interests.splice(idx, 1);
   else state.form.interests.push(i);
-  render();
+  const id = 'interest-' + i.replace(/[^a-z0-9]/gi, '_');
+  const label = document.getElementById(id);
+  if (label) {
+    label.style.border = '2px solid ' + (checked ? TEAL : '#E2E8F0');
+    label.style.background = checked ? '#F0FBF9' : '#FAFAFA';
+    const span = label.querySelector('span');
+    if (span) { span.style.color = checked ? '#065F46' : '#374151'; span.style.fontWeight = checked ? '700' : '400'; }
+    const cb = label.querySelector('input[type=checkbox]');
+    if (cb) cb.checked = checked;
+  }
+}
+
+function setFollowUp(val) {
+  state.form.followUp = val;
+  [["email","✉  Email"],["call","✆  Phone Call"],["none","✗  No Follow-Up"]].forEach(([v]) => {
+    const label = document.getElementById('followup-' + v);
+    if (!label) return;
+    const active = v === val;
+    label.style.border = '2px solid ' + (active ? NAVY : '#E2E8F0');
+    label.style.background = active ? '#EEF2FF' : '#FAFAFA';
+    const span = label.querySelector('span');
+    if (span) { span.style.fontWeight = active ? '700' : '500'; span.style.color = active ? NAVY : '#6B7280'; }
+    const rb = label.querySelector('input[type=radio]');
+    if (rb) rb.checked = active;
+  });
 }
 
 function validate() {
@@ -202,9 +227,10 @@ function renderForm() {
 
   const interestCheckboxes = INTERESTS.map(i => {
     const checked = f.interests.includes(i);
+    const id = 'interest-' + i.replace(/[^a-z0-9]/gi, '_');
     return `
-      <label onclick="toggleInterest('${i.replace(/'/g,"\\'")}'); return false;" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 14px;border-radius:10px;border:2px solid ${checked?TEAL:"#E2E8F0"};background:${checked?"#F0FBF9":"#FAFAFA"};">
-        <input type="checkbox" ${checked?"checked":""} onchange="toggleInterest('${i.replace(/'/g,"\\'")}');" style="width:18px;height:18px;flex-shrink:0;">
+      <label id="${id}" onclick="toggleInterest('${i.replace(/'/g,"\\'")}'); return false;" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 14px;border-radius:10px;border:2px solid ${checked?TEAL:"#E2E8F0"};background:${checked?"#F0FBF9":"#FAFAFA"};">
+        <input type="checkbox" ${checked?"checked":""} style="width:18px;height:18px;flex-shrink:0;">
         <span style="font-size:14px;color:${checked?"#065F46":"#374151"};font-weight:${checked?"700":"400"};line-height:1.3;">${i}</span>
       </label>`;
   }).join("");
@@ -212,8 +238,8 @@ function renderForm() {
   const followUpBtns = [["email","✉  Email"],["call","✆  Phone Call"],["none","✗  No Follow-Up"]].map(([val, label]) => {
     const active = f.followUp === val;
     return `
-      <label style="display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:13px 10px;border-radius:10px;border:2px solid ${active?NAVY:"#E2E8F0"};background:${active?"#EEF2FF":"#FAFAFA"};flex:1;">
-        <input type="radio" name="followUp" value="${val}" ${active?"checked":""} onchange="setField('followUp','${val}');">
+      <label id="followup-${val}" onclick="setFollowUp('${val}'); return false;" style="display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:13px 10px;border-radius:10px;border:2px solid ${active?NAVY:"#E2E8F0"};background:${active?"#EEF2FF":"#FAFAFA"};flex:1;">
+        <input type="radio" name="followUp" value="${val}" ${active?"checked":""}>
         <span style="font-size:14px;font-weight:${active?"700":"500"};color:${active?NAVY:"#6B7280"};">${label}</span>
       </label>`;
   }).join("");

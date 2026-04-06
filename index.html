@@ -122,9 +122,12 @@ function getBannerState() {
   const cdt = getCDT();
   const y = cdt.getFullYear(), mo = String(cdt.getMonth()+1).padStart(2,'0'), d = String(cdt.getDate()).padStart(2,'0');
   const todayStr = `${y}-${mo}-${d}`;
+  const nowMins = cdt.getHours()*60 + cdt.getMinutes();
+  if (todayStr === '2026-04-07' || (todayStr === '2026-04-08' && nowMins < 8*60)) {
+    return { type:'preconf', session: SESSIONS[0] };
+  }
   const todaySessions = SESSIONS.filter(s => s.date === todayStr);
   if (!todaySessions.length) return null;
-  const nowMins = cdt.getHours()*60 + cdt.getMinutes();
   if (nowMins < 8*60) return null;
   for (const s of todaySessions) {
     const sm = s.start.h*60+s.start.m, em = s.end.h*60+s.end.m;
@@ -142,10 +145,10 @@ function getBannerState() {
 }
 
 function getTimeUntil(session) {
-  const cdt = getCDT();
-  const nowSecs = cdt.getHours()*3600 + cdt.getMinutes()*60 + cdt.getSeconds();
-  const targetSecs = session.start.h*3600 + session.start.m*60;
-  const remaining = targetSecs - nowSecs;
+  const now = new Date();
+  const parts = session.date.split('-');
+  const targetUTC = Date.UTC(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]), session.start.h+5, session.start.m, 0);
+  const remaining = Math.floor((targetUTC - now.getTime()) / 1000);
   if (remaining <= 0) return null;
   return { h: Math.floor(remaining/3600), m: Math.floor((remaining%3600)/60), s: remaining%60 };
 }
@@ -177,14 +180,38 @@ function renderMainBanner() {
     </div>`;
   }
 
+  if (info.type === 'preconf') {
+    const { session } = info;
+    const t = getTimeUntil(session);
+    const qr = "https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=" + encodeURIComponent(session.link) + "&bgcolor=ffffff&color=0d1b3e&margin=4";
+    return `<div style="background:#0A1A38;padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+      <div style="flex:1;min-width:0;">
+        <div style="color:${TEAL};font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Virtual Office Hours — Starting Tomorrow</div>
+        <h2 style="color:#fff;font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.2;">${session.title}</h2>
+        <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:16px;">Wed Apr 8 &nbsp;·&nbsp; ${fmtTime(session.start.h, session.start.m)} – ${fmtTime(session.end.h, session.end.m)} CT &nbsp;·&nbsp; Microsoft Teams</p>
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <span id="countdown-display" style="color:#fff;font-size:36px;font-weight:800;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">${fmtCountdown(t)}</span>
+          <span style="color:rgba(255,255,255,0.4);font-size:13px;">until first session</span>
+        </div>
+      </div>
+      <div style="text-align:center;flex-shrink:0;">
+        <div style="color:rgba(255,255,255,0.45);font-size:11px;margin-bottom:8px;">Scan to save the link</div>
+        <div style="background:#fff;border-radius:12px;padding:8px;display:inline-block;">
+          <img src="${qr}" width="120" height="120" style="display:block;" onerror="this.style.display='none'">
+        </div>
+        <div style="color:rgba(255,255,255,0.25);font-size:10px;margin-top:6px;">ID: ${session.id}</div>
+      </div>
+    </div>`;
+  }
+
   const { session } = info;
   const qr = "https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=" + encodeURIComponent(session.link) + "&bgcolor=ffffff&color=0d1b3e&margin=4";
   const timeRange = `${fmtTime(session.start.h, session.start.m)} – ${fmtTime(session.end.h, session.end.m)}`;
   const t = getTimeUntil(session);
 
   let bg, subColor, scanLabel;
-  if (info.type === 'live')      { bg = TEAL;     subColor = 'rgba(255,255,255,0.75)'; scanLabel = 'Scan to join now'; }
-  else if (info.type === 'soon') { bg = '#B45309'; subColor = 'rgba(255,255,255,0.7)'; scanLabel = 'Scan to join soon'; }
+  if (info.type === 'live')      { bg = TEAL;      subColor = 'rgba(255,255,255,0.75)'; scanLabel = 'Scan to join now'; }
+  else if (info.type === 'soon') { bg = '#9A6AFF'; subColor = 'rgba(255,255,255,0.75)'; scanLabel = 'Scan to join soon'; }
   else                            { bg = '#0A1A38'; subColor = 'rgba(255,255,255,0.45)'; scanLabel = 'Scan to save the link'; }
 
   return `<div style="background:${bg};padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
@@ -353,8 +380,8 @@ function renderForm() {
     <!-- Header -->
     <div style="background:${NAVY};padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;">
       <div>
-        <div style="color:#fff;font-size:19px;font-weight:800;letter-spacing:-0.02em;">UTAK Laboratories</div>
-        <div style="color:${TEAL};font-size:11px;font-weight:600;letter-spacing:0.1em;margin-top:1px;">SAT 2026 — BOOTH LEAD INTAKE</div>
+        <img src="./UTAK_Lettetmark_CleanWhite_1920px.png" alt="UTAK" style="height:34px;width:auto;mix-blend-mode:screen;display:block;">
+        <div style="color:${TEAL};font-size:11px;font-weight:600;letter-spacing:0.1em;margin-top:3px;">SAT 2026 — BOOTH LEAD INTAKE</div>
       </div>
       <button onclick="openReview()" style="background:${TEAL};border:none;border-radius:8px;color:#fff;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;">View Leads →</button>
     </div>
@@ -535,7 +562,10 @@ function renderReview() {
     <div style="background:${NAVY};padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;">
       <div style="display:flex;align-items:center;gap:14px;">
         <button onclick="setState({view:'form'})" style="background:rgba(255,255,255,0.12);border:none;border-radius:8px;color:#fff;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;">← Back to Form</button>
-        <div><div style="color:#fff;font-size:15px;font-weight:700;">SAT 2026 — Lead Review</div><div style="color:${TEAL};font-size:11px;margin-top:1px;">${leads.length} total · ${unassigned} unassigned</div></div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <img src="./UTAK_Lettetmark_CleanWhite_1920px.png" alt="UTAK" style="height:28px;width:auto;mix-blend-mode:screen;display:block;">
+          <div><div style="color:#fff;font-size:15px;font-weight:700;">SAT 2026 — Lead Review</div><div style="color:${TEAL};font-size:11px;margin-top:1px;">${leads.length} total · ${unassigned} unassigned</div></div>
+        </div>
       </div>
       <button onclick="exportCSV()" style="background:${TEAL};border:none;border-radius:8px;color:#fff;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;">Export CSV ↓</button>
     </div>

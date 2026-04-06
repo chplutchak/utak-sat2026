@@ -118,65 +118,97 @@ function getSessionState() {
   return null;
 }
 
-function renderScheduleStrip() {
+function getBannerState() {
   const cdt = getCDT();
   const y = cdt.getFullYear(), mo = String(cdt.getMonth()+1).padStart(2,'0'), d = String(cdt.getDate()).padStart(2,'0');
   const todayStr = `${y}-${mo}-${d}`;
   const todaySessions = SESSIONS.filter(s => s.date === todayStr);
-  if (!todaySessions.length) return '';
-  const nowMins = cdt.getHours() * 60 + cdt.getMinutes();
-  const items = todaySessions.map(s => {
+  if (!todaySessions.length) return null;
+  const nowMins = cdt.getHours()*60 + cdt.getMinutes();
+  if (nowMins < 8*60) return null;
+  for (const s of todaySessions) {
     const sm = s.start.h*60+s.start.m, em = s.end.h*60+s.end.m;
-    const isLive = nowMins >= sm && nowMins < em;
-    const isDone = nowMins >= em;
-    return `<div style="display:flex;align-items:center;gap:8px;${isDone?'opacity:0.4':''}">
-      <div style="width:7px;height:7px;border-radius:50%;background:${isLive?TEAL:'rgba(255,255,255,0.35)'};flex-shrink:0;${isLive?'animation:pulse 1.4s infinite':''}"></div>
-      <span style="font-size:12px;font-weight:${isLive?'700':'500'};color:${isLive?'#fff':'rgba(255,255,255,0.7)'};">${s.title}</span>
-      <span style="font-size:12px;color:rgba(255,255,255,0.5);">${fmtTime(s.start.h,s.start.m)} – ${fmtTime(s.end.h,s.end.m)}</span>
-      ${isLive ? `<span style="background:${TEAL};color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:0.05em;">LIVE</span>` : ''}
-    </div>`;
-  }).join('<div style="width:1px;height:16px;background:rgba(255,255,255,0.15);flex-shrink:0;"></div>');
-  return `<div style="background:#0D2554;padding:10px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-    <span style="font-size:10px;font-weight:800;color:${TEAL};text-transform:uppercase;letter-spacing:0.12em;flex-shrink:0;">Virtual Office Hours</span>
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">${items}</div>
-  </div>`;
+    if (nowMins >= sm && nowMins < em) return { type:'live', session:s };
+  }
+  for (const s of todaySessions) {
+    const sm = s.start.h*60+s.start.m;
+    if (nowMins < sm && sm - nowMins <= 30) return { type:'soon', session:s };
+  }
+  for (const s of todaySessions) {
+    const sm = s.start.h*60+s.start.m;
+    if (nowMins < sm) return { type:'countdown', session:s };
+  }
+  return { type:'wrap' };
 }
 
-function renderBannerContent() {
-  const info = getSessionState();
+function getTimeUntil(session) {
+  const cdt = getCDT();
+  const nowSecs = cdt.getHours()*3600 + cdt.getMinutes()*60 + cdt.getSeconds();
+  const targetSecs = session.start.h*3600 + session.start.m*60;
+  const remaining = targetSecs - nowSecs;
+  if (remaining <= 0) return null;
+  return { h: Math.floor(remaining/3600), m: Math.floor((remaining%3600)/60), s: remaining%60 };
+}
+
+function fmtCountdown(t) {
+  if (!t) return '';
+  const mm = String(t.m).padStart(2,'0'), ss = String(t.s).padStart(2,'0');
+  return t.h > 0 ? `${t.h}h ${mm}m ${ss}s` : `${t.m}m ${ss}s`;
+}
+
+function renderMainBanner() {
+  const info = getBannerState();
   if (!info) return '';
-  const { type, session, mins } = info;
-  const qr = "https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" + encodeURIComponent(session.link) + "&bgcolor=ffffff&color=0d1b3e&margin=4";
-  const timeRange = `${fmtTime(session.start.h, session.start.m)} – ${fmtTime(session.end.h, session.end.m)}`;
 
-  let bg, badge, badgeColor, textColor;
-  if (type === 'live') {
-    bg = TEAL; badge = null; textColor = '#fff';
-  } else if (type === 'soon') {
-    bg = '#D97706'; badge = `Starting in ${mins} min`; textColor = '#fff';
-  } else {
-    bg = NAVY; badge = `Coming up · ${fmtTime(session.start.h, session.start.m)}`; textColor = '#fff';
-  }
-
-  return `
-    <div style="background:${bg};padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
-      <div style="display:flex;align-items:center;gap:16px;flex:1;">
-        ${type==='live' ? `<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);border-radius:20px;padding:5px 12px;flex-shrink:0;"><span class="live-dot"></span><span style="color:#fff;font-size:12px;font-weight:800;letter-spacing:0.08em;">LIVE NOW</span></div>` : `<div style="background:rgba(255,255,255,0.18);border-radius:20px;padding:5px 14px;flex-shrink:0;"><span style="color:#fff;font-size:12px;font-weight:700;">${badge}</span></div>`}
-        <div>
-          <div style="color:#fff;font-size:17px;font-weight:800;">${session.title}</div>
-          <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:2px;">${timeRange} · Microsoft Teams · Passcode: ${session.passcode}</div>
-        </div>
+  if (info.type === 'wrap') {
+    return `<div style="background:#0A1A38;padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+      <div style="flex:1;">
+        <div style="color:${TEAL};font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Virtual Office Hours</div>
+        <h2 style="color:#fff;font-size:26px;font-weight:800;margin-bottom:8px;line-height:1.2;">That's a wrap for today.</h2>
+        <p style="color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;">Want to keep the conversation going? Book time with Andrew directly.</p>
       </div>
-      <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
-        <div style="text-align:right;">
-          <div style="color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:4px;">Scan to join</div>
-          <div style="color:rgba(255,255,255,0.5);font-size:10px;">ID: ${session.id}</div>
+      <div style="text-align:center;flex-shrink:0;">
+        <div style="color:rgba(255,255,255,0.45);font-size:11px;margin-bottom:8px;">Scan to book a meeting</div>
+        <div style="background:#fff;border-radius:12px;padding:8px;display:inline-block;">
+          <img src="${QR_CALENDLY}" width="110" height="110" style="display:block;" onerror="this.style.display='none'">
         </div>
-        <div style="background:#fff;border-radius:10px;padding:6px;">
-          <img src="${qr}" width="100" height="100" style="display:block;" onerror="this.style.display='none'">
-        </div>
+        <div style="color:rgba(255,255,255,0.25);font-size:10px;margin-top:6px;">calendly.com/ahartmann-utak/30min</div>
       </div>
     </div>`;
+  }
+
+  const { session } = info;
+  const qr = "https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=" + encodeURIComponent(session.link) + "&bgcolor=ffffff&color=0d1b3e&margin=4";
+  const timeRange = `${fmtTime(session.start.h, session.start.m)} – ${fmtTime(session.end.h, session.end.m)}`;
+  const t = getTimeUntil(session);
+
+  let bg, subColor, scanLabel;
+  if (info.type === 'live')      { bg = TEAL;     subColor = 'rgba(255,255,255,0.75)'; scanLabel = 'Scan to join now'; }
+  else if (info.type === 'soon') { bg = '#B45309'; subColor = 'rgba(255,255,255,0.7)'; scanLabel = 'Scan to join soon'; }
+  else                            { bg = '#0A1A38'; subColor = 'rgba(255,255,255,0.45)'; scanLabel = 'Scan to save the link'; }
+
+  return `<div style="background:${bg};padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="color:${info.type==='live'?'rgba(255,255,255,0.85)':TEAL};font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;">Virtual Office Hours</span>
+        ${info.type==='live' ? `<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;"><span class="live-dot"></span><span style="color:#fff;font-size:11px;font-weight:800;letter-spacing:0.06em;">LIVE NOW</span></span>` : ''}
+        ${info.type==='soon' ? `<span style="background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;color:#fff;font-size:11px;font-weight:700;">Starting soon</span>` : ''}
+      </div>
+      <h2 style="color:#fff;font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.2;">${session.title}</h2>
+      <p style="color:${subColor};font-size:13px;margin-bottom:${info.type!=='live'?'16px':'0'};">${timeRange} &nbsp;·&nbsp; Microsoft Teams &nbsp;·&nbsp; Passcode: <strong style="color:rgba(255,255,255,0.85);font-weight:700;">${session.passcode}</strong></p>
+      ${info.type !== 'live' ? `<div style="display:flex;align-items:baseline;gap:10px;">
+        <span id="countdown-display" style="color:#fff;font-size:36px;font-weight:800;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">${fmtCountdown(t)}</span>
+        <span style="color:${subColor};font-size:13px;">until we go live</span>
+      </div>` : ''}
+    </div>
+    <div style="text-align:center;flex-shrink:0;">
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:8px;font-weight:500;">${scanLabel}</div>
+      <div style="background:#fff;border-radius:12px;padding:8px;display:inline-block;">
+        <img src="${qr}" width="120" height="120" style="display:block;" onerror="this.style.display='none'">
+      </div>
+      <div style="color:rgba(255,255,255,0.25);font-size:10px;margin-top:6px;">ID: ${session.id}</div>
+    </div>
+  </div>`;
 }
 
 // --- State helpers ---
@@ -327,11 +359,8 @@ function renderForm() {
       <button onclick="openReview()" style="background:${TEAL};border:none;border-radius:8px;color:#fff;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;">View Leads →</button>
     </div>
 
-    <!-- Always-on schedule strip -->
-    <div id="schedule-strip">${renderScheduleStrip()}</div>
-
-    <!-- Dynamic office hours banner -->
-    <div id="office-hours-banner">${renderBannerContent()}</div>
+    <!-- Countdown / live banner -->
+    <div id="main-banner">${renderMainBanner()}</div>
 
     <!-- Success bar -->
     ${state.success ? `<div class="success-bar" style="background:#D1FAE5;border-bottom:2px solid #34D399;padding:12px 24px;text-align:center;font-size:15px;font-weight:700;color:#065F46;">✓ Contact saved! Ready for the next visitor.</div>` : ''}
@@ -527,15 +556,24 @@ function render() {
 }
 
 function updateBannerOnly() {
-  const el = document.getElementById('office-hours-banner');
-  if (el) el.innerHTML = renderBannerContent();
-  const strip = document.getElementById('schedule-strip');
-  if (strip) strip.innerHTML = renderScheduleStrip();
+  const el = document.getElementById('main-banner');
+  if (el) el.innerHTML = renderMainBanner();
+}
+
+function tickCountdown() {
+  const el = document.getElementById('countdown-display');
+  if (!el) return;
+  const info = getBannerState();
+  if (info && (info.type === 'countdown' || info.type === 'soon')) {
+    const t = getTimeUntil(info.session);
+    if (t) el.textContent = fmtCountdown(t);
+  }
 }
 
 loadLeads();
 render();
 setInterval(updateBannerOnly, 60000);
+setInterval(tickCountdown, 1000);
 </script>
 </body>
 </html>

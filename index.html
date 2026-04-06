@@ -118,6 +118,30 @@ function getSessionState() {
   return null;
 }
 
+function renderScheduleStrip() {
+  const cdt = getCDT();
+  const y = cdt.getFullYear(), mo = String(cdt.getMonth()+1).padStart(2,'0'), d = String(cdt.getDate()).padStart(2,'0');
+  const todayStr = `${y}-${mo}-${d}`;
+  const todaySessions = SESSIONS.filter(s => s.date === todayStr);
+  if (!todaySessions.length) return '';
+  const nowMins = cdt.getHours() * 60 + cdt.getMinutes();
+  const items = todaySessions.map(s => {
+    const sm = s.start.h*60+s.start.m, em = s.end.h*60+s.end.m;
+    const isLive = nowMins >= sm && nowMins < em;
+    const isDone = nowMins >= em;
+    return `<div style="display:flex;align-items:center;gap:8px;${isDone?'opacity:0.4':''}">
+      <div style="width:7px;height:7px;border-radius:50%;background:${isLive?TEAL:'rgba(255,255,255,0.35)'};flex-shrink:0;${isLive?'animation:pulse 1.4s infinite':''}"></div>
+      <span style="font-size:12px;font-weight:${isLive?'700':'500'};color:${isLive?'#fff':'rgba(255,255,255,0.7)'};">${s.title}</span>
+      <span style="font-size:12px;color:rgba(255,255,255,0.5);">${fmtTime(s.start.h,s.start.m)} – ${fmtTime(s.end.h,s.end.m)}</span>
+      ${isLive ? `<span style="background:${TEAL};color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:0.05em;">LIVE</span>` : ''}
+    </div>`;
+  }).join('<div style="width:1px;height:16px;background:rgba(255,255,255,0.15);flex-shrink:0;"></div>');
+  return `<div style="background:#0D2554;padding:10px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+    <span style="font-size:10px;font-weight:800;color:${TEAL};text-transform:uppercase;letter-spacing:0.12em;flex-shrink:0;">Virtual Office Hours</span>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">${items}</div>
+  </div>`;
+}
+
 function renderBannerContent() {
   const info = getSessionState();
   if (!info) return '';
@@ -303,6 +327,9 @@ function renderForm() {
       <button onclick="openReview()" style="background:${TEAL};border:none;border-radius:8px;color:#fff;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;">View Leads →</button>
     </div>
 
+    <!-- Always-on schedule strip -->
+    <div id="schedule-strip">${renderScheduleStrip()}</div>
+
     <!-- Dynamic office hours banner -->
     <div id="office-hours-banner">${renderBannerContent()}</div>
 
@@ -376,19 +403,30 @@ function renderForm() {
       <div style="display:flex;flex-direction:column;gap:14px;">
 
         <!-- Office hours schedule — top of sidebar -->
-        <div style="background:#fff;border-radius:14px;padding:16px 18px;border:1px solid #E2E8F0;">
-          <div style="font-size:10px;font-weight:800;color:${NAVY};text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Virtual Office Hours</div>
-          ${SESSIONS.map(s => {
+        <div style="background:${NAVY};border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);">
+          <div style="padding:14px 18px 10px;">
+            <h3 style="font-size:13px;font-weight:800;color:${TEAL};text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;">Virtual Office Hours</h3>
+            <p style="font-size:11px;color:rgba(255,255,255,0.45);font-weight:400;">Connect live with our team via Microsoft Teams</p>
+          </div>
+          <div style="padding:0 18px 14px;">
+          ${SESSIONS.map((s,i) => {
             const info = getSessionState();
             const isLive = info && info.type==='live' && info.session===s;
-            return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F3F4F6;">
-              <div>
-                <div style="font-size:13px;font-weight:700;color:${NAVY};">${s.title}</div>
-                <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${s.date==='2026-04-08'?'Wed Apr 8':'Thu Apr 9'} · ${fmtTime(s.start.h,s.start.m)} – ${fmtTime(s.end.h,s.end.m)}</div>
+            const cdt = getCDT();
+            const nowMins = cdt.getHours()*60+cdt.getMinutes();
+            const em = s.end.h*60+s.end.m;
+            const isDone = nowMins >= em;
+            return `<div style="padding:10px 0;${i < SESSIONS.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.08);':''};opacity:${isDone?'0.4':'1'}">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#fff;">${s.title}</div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">${s.date==='2026-04-08'?'Wed Apr 8':'Thu Apr 9'} &nbsp;·&nbsp; ${fmtTime(s.start.h,s.start.m)} – ${fmtTime(s.end.h,s.end.m)}</div>
+                </div>
+                ${isLive ? `<span style="background:${TEAL};color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:8px;flex-shrink:0;">LIVE</span>` : ''}
               </div>
-              ${isLive ? `<span style="background:${TEAL};color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:10px;">LIVE</span>` : ''}
             </div>`;
           }).join('')}
+          </div>
         </div>
 
         <!-- Book a meeting -->
@@ -491,6 +529,8 @@ function render() {
 function updateBannerOnly() {
   const el = document.getElementById('office-hours-banner');
   if (el) el.innerHTML = renderBannerContent();
+  const strip = document.getElementById('schedule-strip');
+  if (strip) strip.innerHTML = renderScheduleStrip();
 }
 
 loadLeads();

@@ -49,22 +49,6 @@ const QR_CUSTOM = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data
 // Office hours sessions — all times in CDT (UTC-5)
 const SESSIONS = [
   {
-    date: "2026-04-08",
-    start: { h:11, m:30 }, end: { h:12, m:30 },
-    title: "Ask Our Director of Engineering",
-    name: "Nicole",
-    link: "https://teams.microsoft.com/meet/25378858542457?p=XCbA7Y1zQNnpUalSIM",
-    passcode: "or3XM3hC", id: "253 788 585 424 57"
-  },
-  {
-    date: "2026-04-08",
-    start: { h:13, m:0 }, end: { h:14, m:0 },
-    title: "Answers with Andrew",
-    name: "Andrew",
-    link: "https://teams.microsoft.com/meet/214573364229698?p=jQiBb0Cuk6Wh10LXrG",
-    passcode: "cT3mf3KC", id: "214 573 364 229 698"
-  },
-  {
     date: "2026-04-09",
     start: { h:12, m:30 }, end: { h:13, m:30 },
     title: "Answers with Andrew",
@@ -131,7 +115,7 @@ function getBannerState() {
   const y = cdt.getFullYear(), mo = String(cdt.getMonth()+1).padStart(2,'0'), d = String(cdt.getDate()).padStart(2,'0');
   const todayStr = `${y}-${mo}-${d}`;
   const nowMins = cdt.getHours()*60 + cdt.getMinutes();
-  if (todayStr === '2026-04-07' || (todayStr === '2026-04-08' && nowMins < 8*60)) {
+  if (todayStr === '2026-04-07' || todayStr === '2026-04-08') {
     return { type:'preconf', session: SESSIONS[0] };
   }
   const todaySessions = SESSIONS.filter(s => s.date === todayStr);
@@ -196,7 +180,7 @@ function renderMainBanner() {
       <div style="flex:1;min-width:0;">
         <div style="color:${TEAL};font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Virtual Office Hours — Starting Tomorrow</div>
         <h2 style="color:#fff;font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.2;">${session.title}</h2>
-        <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:16px;">Wed Apr 8 &nbsp;·&nbsp; ${fmtTime(session.start.h, session.start.m)} – ${fmtTime(session.end.h, session.end.m)} CT &nbsp;·&nbsp; Microsoft Teams</p>
+        <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:16px;">Thu Apr 9 &nbsp;·&nbsp; ${fmtTime(session.start.h, session.start.m)} – ${fmtTime(session.end.h, session.end.m)} CT &nbsp;·&nbsp; Microsoft Teams</p>
         <div style="display:flex;align-items:baseline;gap:10px;">
           <span id="countdown-display" style="color:#fff;font-size:36px;font-weight:800;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;">${fmtCountdown(t)}</span>
           <span style="color:rgba(255,255,255,0.4);font-size:13px;">until first session</span>
